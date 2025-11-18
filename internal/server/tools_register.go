@@ -53,9 +53,21 @@ func getAllTools(deps *tools.ToolDependencies) []server.ServerTool {
 			Handler: cypher.WriteCypherHandler(deps),
 		},
 		// GDS Category/Section
+		/*
+			{
+				Tool:    gds.ListGDSProceduresSpec(),
+				Handler: gds.ListGdsProceduresHandler(deps),
+			},
+		*/
+		// Lists, in summary format, all installed GDS functions
 		{
-			Tool:    gds.ListGDSProceduresSpec(),
-			Handler: gds.ListGdsProceduresHandler(deps),
+			Tool:    gds.ListSummaryGDSProceduresSpec(),
+			Handler: gds.ListSummaryGDSProceduresHandler(deps),
+		},
+		// Gets the details for a named GDS function
+		{
+			Tool:    gds.GetGDSFunctionDetailSpec(),
+			Handler: gds.GetGDSFunctionDetailHandler(deps),
 		},
 		// Add other categories below...
 	}
