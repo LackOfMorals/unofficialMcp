@@ -2,9 +2,8 @@ package server
 
 import (
 	"github.com/mark3labs/mcp-go/server"
-	"github.com/neo4j/mcp/internal/tools"
-	"github.com/neo4j/mcp/internal/tools/cypher"
-	"github.com/neo4j/mcp/internal/tools/gds"
+
+	"github.com/neo4j/mcp/internal/tools/aura"
 )
 
 // RegisterTools registers all enabled MCP tools and adds them to the provided MCP server.
@@ -14,15 +13,11 @@ import (
 // Note: this read-only filtering relies on the tool annotation "readonly" (ReadOnlyHint). If the annotation
 // is not defined or is set to false, the tool will be added (i.e., only tools with readonly=true are filtered in read-only mode).
 func (s *Neo4jMCPServer) RegisterTools() error {
-	deps := &tools.ToolDependencies{
-		DBService:        s.dbService,
-		AnalyticsService: s.anService,
-	}
 
-	all := getAllTools(deps)
+	all := getAllTools()
 
 	// If read-only mode is enabled, expose only tools annotated as read-only.
-	if deps != nil && s.config != nil && s.config.ReadOnly == "true" {
+	if s.config != nil && s.config.ReadOnly == "true" {
 		readOnlyTools := make([]server.ServerTool, 0, len(all))
 		for _, t := range all {
 			if t.Tool.Annotations.ReadOnlyHint != nil && *t.Tool.Annotations.ReadOnlyHint {
@@ -38,37 +33,12 @@ func (s *Neo4jMCPServer) RegisterTools() error {
 }
 
 // getAllTools returns all available tools with their specs and handlers
-func getAllTools(deps *tools.ToolDependencies) []server.ServerTool {
+func getAllTools() []server.ServerTool {
 	return []server.ServerTool{
+		// Aura infrastructure management
 		{
-			Tool:    cypher.GetSchemaSpec(),
-			Handler: cypher.GetSchemaHandler(deps),
+			Tool:    aura.CreateInstanceSpec(),
+			Handler: aura.CreateInstanceHandler(),
 		},
-		{
-			Tool:    cypher.ReadCypherSpec(),
-			Handler: cypher.ReadCypherHandler(deps),
-		},
-		{
-			Tool:    cypher.WriteCypherSpec(),
-			Handler: cypher.WriteCypherHandler(deps),
-		},
-		// GDS Category/Section
-		/*
-			{
-				Tool:    gds.ListGDSProceduresSpec(),
-				Handler: gds.ListGdsProceduresHandler(deps),
-			},
-		*/
-		// Lists, in summary format, all installed GDS functions
-		{
-			Tool:    gds.ListSummaryGDSProceduresSpec(),
-			Handler: gds.ListSummaryGDSProceduresHandler(deps),
-		},
-		// Gets the details for a named GDS function
-		{
-			Tool:    gds.GetGDSFunctionDetailSpec(),
-			Handler: gds.GetGDSFunctionDetailHandler(deps),
-		},
-		// Add other categories below...
 	}
 }

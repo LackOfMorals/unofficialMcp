@@ -7,12 +7,10 @@ import (
 
 // Config holds the application configuration
 type Config struct {
-	URI       string
-	Username  string
-	Password  string
-	Database  string
-	ReadOnly  string // If true, disables write tools
-	Telemetry string // if false, disables telemetry
+	URI          string
+	ClientId     string
+	ClientSecret string
+	ReadOnly     string // If true, disables tools that make changes to Aura infrastructure
 }
 
 // Validate validates the configuration and returns an error if invalid
@@ -21,17 +19,13 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("configuration is required but was nil")
 	}
 
-	if c.Telemetry != "false" && c.Telemetry != "true" {
-		return fmt.Errorf("%s cannot be converted to type %s", "NEO4J_TELEMETRY", "bool")
-	}
-
 	validations := []struct {
 		value string
 		name  string
 	}{
 		{c.URI, "Neo4j URI"},
-		{c.Username, "Neo4j username"},
-		{c.Password, "Neo4j password"},
+		{c.ClientId, "Aura API Client Id "},
+		{c.ClientSecret, "Aura API Client Secret"},
 	}
 
 	for _, v := range validations {
@@ -46,12 +40,10 @@ func (c *Config) Validate() error {
 // LoadConfig loads configuration from environment variables with defaults
 func LoadConfig() (*Config, error) {
 	cfg := &Config{
-		URI:       GetEnvWithDefault("NEO4J_URI", "bolt://localhost:7687"),
-		Username:  GetEnvWithDefault("NEO4J_USERNAME", "neo4j"),
-		Password:  GetEnvWithDefault("NEO4J_PASSWORD", "password"),
-		Database:  GetEnvWithDefault("NEO4J_DATABASE", "neo4j"),
-		ReadOnly:  GetEnvWithDefault("NEO4J_READ_ONLY", "false"),
-		Telemetry: GetEnvWithDefault("NEO4J_TELEMETRY", "true"),
+		URI:          GetEnvWithDefault("AURA_API_URI", "https://api.neo4j.io/v1"),
+		ClientId:     GetEnvWithDefault("AURA_API_ID", ""),
+		ClientSecret: GetEnvWithDefault("AURA_API_SECRET", ""),
+		ReadOnly:     GetEnvWithDefault("AURA_API_READ_ONLY", "true"),
 	}
 
 	if err := cfg.Validate(); err != nil {

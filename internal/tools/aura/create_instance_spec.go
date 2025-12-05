@@ -1,4 +1,4 @@
-package cypher
+package aura
 
 import (
 	"github.com/mark3labs/mcp-go/mcp"
@@ -6,21 +6,11 @@ import (
 
 type ReadCypherInput struct {
 	Query  string         `json:"query" jsonschema:"default=MATCH(n) RETURN n,description=The Cypher query to execute"`
-	Params map[string]any `json:"params" jsonschema:"default={},description=Parameters to pass to the Cypher query"`
+	Params map[string]any `json:"params,omitempty" jsonschema:"default={},description=Parameters to pass to the Cypher query"`
 }
 
-// GetParams returns the params map
-func (r *ReadCypherInput) GetParams() map[string]any {
-	return r.Params
-}
-
-// SetParams sets the params map
-func (r *ReadCypherInput) SetParams(params map[string]any) {
-	r.Params = params
-}
-
-func ReadCypherSpec() mcp.Tool {
-	return mcp.NewTool("read-cypher",
+func CreateInstanceSpec() mcp.Tool {
+	return mcp.NewTool("create-instance",
 		mcp.WithDescription("read-cypher can run only read-only Cypher statements. For write operations (CREATE, MERGE, DELETE, SET, etc...), schema/admin commands, or PROFILE queries, use write-cypher instead."),
 		mcp.WithInputSchema[ReadCypherInput](),
 		mcp.WithTitleAnnotation("Read Cypher"),

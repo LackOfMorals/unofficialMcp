@@ -8,26 +8,29 @@ import (
 // osExit is a variable that can be mocked in tests
 var osExit = os.Exit
 
-const helpText = `neo4j-mcp - Neo4j Model Context Protocol Server
+const helpText = `neo4j-aura-mcp - A Model Context Protocol Server to manage Neo4j Aura DB infrastructure
 
 Usage:
-  neo4j-mcp [OPTIONS]
+  neo4j-aura-mcp [OPTIONS]
 
 Options:
   -h, --help      Show this help message
   -v, --version   Show version information
 
 Environment Variables:
-  NEO4J_URI       Neo4j database URI (default: bolt://localhost:7687)
-  NEO4J_USERNAME  Database username (default: neo4j)
-  NEO4J_PASSWORD  Database password (required)
-  NEO4J_DATABASE  Database name (default: neo4j)
+
+	AURA_API_URI          The URI of the Aura API  - OPTIONAL - ( Default: https://api.neo4j.io/v1 )
+	AURA_API_ID           Client Id used to obtain an token that is then used to acccess the Aura API - REQUIRED - ( Default: N/A ) 
+	AURA_API_SECRET       Client Secret used to obtain an token that is then used to acccess the Aura API - REQUIRED - ( Default: N/A ) 
+    AURA_API_READ_ONLY    Prevents updates and deletions to Aura infrastructure.  Set to False to allow that. Aura API - OPTIONAL - ( Default: True ) 
+  
 
 Examples:
-  NEO4J_PASSWORD=mypassword neo4j-mcp
-  NEO4J_URI=bolt://db.example.com:7687 NEO4J_USERNAME=admin NEO4J_PASSWORD=secret neo4j-mcp
+  AURA_API_ID="asdkfjsdhjkgsdf-2nsndfgskdfsg"
+  AURA_API_SECRET="dfkbdjdf98er598ds-98vnasns-12312309smn-bht"
 
-For more information, visit: https://github.com/neo4j/mcp
+
+
 `
 
 func HandleArgs(version string) {
@@ -60,7 +63,7 @@ func HandleArgs(version string) {
 	}
 
 	if flags["version"] {
-		fmt.Printf("neo4j-mcp version: %s\n", version)
+		fmt.Printf("neo4j-aura-mcp version: %s\n", version)
 		osExit(0)
 	}
 }
