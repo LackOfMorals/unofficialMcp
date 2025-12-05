@@ -26,7 +26,7 @@ func handleListInstance(ctx context.Context, deps *tools.ToolDependencies) (*mcp
 
 	var buffer bytes.Buffer
 
-	fmt.Fprintf(&buffer, "%v", instances.Data)
+	fmt.Fprintf(&buffer, "%#v", instances.Data)
 
 	return mcp.NewToolResultText(buffer.String()), nil
 }
