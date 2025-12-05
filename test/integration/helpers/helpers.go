@@ -11,11 +11,11 @@ import (
 	"testing"
 	"time"
 
+	analytics_mocks "github.com/LackOfMorals/unofficialMcp/internal/analytics/mocks"
+	"github.com/LackOfMorals/unofficialMcp/internal/database"
+	"github.com/LackOfMorals/unofficialMcp/internal/tools"
 	"github.com/google/uuid"
 	"github.com/mark3labs/mcp-go/mcp"
-	analytics_mocks "github.com/neo4j/mcp/internal/analytics/mocks"
-	"github.com/neo4j/mcp/internal/database"
-	"github.com/neo4j/mcp/internal/tools"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"go.uber.org/mock/gomock"
 )

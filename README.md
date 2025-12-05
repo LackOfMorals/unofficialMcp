@@ -1,4 +1,4 @@
-# Neo4j MCP (BETA)
+# A MCP Server that allows a LLM / Agent to managed Neo4j Aura DB infrastructure
 
 Official Model Context Protocol (MCP) server for Neo4j.
 
@@ -8,37 +8,9 @@ BETA - Active development; not yet suitable for production.
 
 ## Prerequisites
 
-- A running Neo4j database instance; options include [Aura](https://neo4j.com/product/auradb/), [neo4j–desktop](https://neo4j.com/download/) or [self-managed](https://neo4j.com/deployment-center/#gdb-tab).
-- APOC plugin installed in the Neo4j instance.
-- Any MCP-compatible client (e.g. [VSCode](https://code.visualstudio.com/) with [MCP support](https://code.visualstudio.com/docs/copilot/customization/mcp-servers))
+- Registered to use Neo4j Aura DB
+- Client Id and secret to use the Aura API
 
-## Installation (Binary)
-
-Releases: https://github.com/neo4j/mcp/releases
-
-1. Download the archive for your OS/arch.
-2. Extract and place `neo4j-mcp` in a directory present in your PATH variables (see examples below).
-
-Mac / Linux:
-
-```bash
-chmod +x neo4j-mcp
-sudo mv neo4j-mcp /usr/local/bin/
-```
-
-Windows (PowerShell / cmd):
-
-```powershell
-move neo4j-mcp.exe C:\Windows\System32
-```
-
-Verify the neo4j-mcp installation:
-
-```bash
-neo4j-mcp -v
-```
-
-Should print the installed version.
 
 ## Configure VSCode (MCP)
 
@@ -49,14 +21,12 @@ Create / edit `mcp.json` (docs: https://code.visualstudio.com/docs/copilot/custo
   "servers": {
     "neo4j": {
       "type": "stdio",
-      "command": "neo4j-mcp",
+      "command": "neo4j-aura-mcp",
       "env": {
-        "NEO4J_URI": "bolt://localhost:7687",
-        "NEO4J_USERNAME": "neo4j",
-        "NEO4J_PASSWORD": "password",
-        "NEO4J_DATABASE": "neo4j",
-        "NEO4J_READ_ONLY": "true", // Optional: disables write tools
-        "NEO4J_TELEMETRY": "false" // Optional: disables telemetry
+        "AURA_API_URI": "https://api.neo4j.io/v1",
+        "AURA_API_ID":  "kjsdghkvp8w3rvaser",
+        "AURA_API_SECRET": "asdkjhfdk-adsfhshdf-1238sd8-afjkajdfkjsaf",
+        "AURA_API_READ_ONLY":  "True",
       }
     }
   }
@@ -83,29 +53,22 @@ You’ll then add the `neo4j-mcp` MCP in the mcpServers key:
   "mcpServers": {
     "neo4j-mcp": {
       "type": "stdio",
-      "command": "neo4j-mcp",
+      "command": "neo4j-aura-mcp",
       "args": [],
       "env": {
-        "NEO4J_URI": "bolt://localhost:7687",
-        "NEO4J_USERNAME": "neo4j",
-        "NEO4J_PASSWORD": "password",
-        "NEO4J_DATABASE": "neo4j",
-        "NEO4J_READ_ONLY": "true", // Optional: disables write tools
-        "NEO4J_TELEMETRY": "false" // Optional: disables telemetry
+        "AURA_API_URI": "https://api.neo4j.io/v1",
+        "AURA_API_ID":  "kjsdghkvp8w3rvaser",
+        "AURA_API_SECRET": "asdkjhfdk-adsfhshdf-1238sd8-afjkajdfkjsaf",
+        "AURA_API_READ_ONLY":  "True",
       }
     }
   }
 }
 ```
 
-Notes:
-
-- Adjust env vars for your setup (defaults shown above).
-- Set `NEO4J_READ_ONLY=true` to disable all write tools (e.g., `write-cypher`).
-- Set `NEO4J_TELEMETRY=false` to disable telemetry.
-- When enabled, only read operations are available; write tools are not exposed to clients.
-- Neo4j Desktop default URI: `bolt://localhost:7687`.
-- Aura: use the connection string from the Aura console.
+__Notes:__
+- Adjust env vars for your setup.  You must supply values for AURA_API_ID and AURA_API_SECRET
+- Set `AURA_API_READ_ONLY=false` to enable changes to be made to existing Aura infrastructure
 
 ## Tools & Usage
 
@@ -113,50 +76,27 @@ Provided tools:
 
 | Tool                  | ReadOnly | Purpose                                              | Notes                                                                                                                          |
 | --------------------- | -------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `get-schema`          | `true`   | Introspect labels, relationship types, property keys | Provide valuable context to the client LLMs.                                                                                   |
-| `read-cypher`         | `true`   | Execute arbitrary Cypher (read mode)                 | Rejects writes, schema/admin operations, and PROFILE queries. Use `write-cypher` instead.                                      |
-| `write-cypher`        | `false`  | Execute arbitrary Cypher (write mode)                | **Caution:** LLM-generated queries could cause harm. Use only in development environments. Disabled if `NEO4J_READ_ONLY=true`. |
-| `list-gds-procedures` | `true`   | List GDS procedures available in the Neo4j instance  | Help the client LLM to have a better visibility on the GDS procedures available                                                |
+| `list-instances`      | `true`   | Lists all instances in Aura                          |                                                                                 |
+
 
 ### Readonly mode flag
 
-Enable readonly mode by setting the `NEO4J_READ_ONLY` environment variable to `true` (for example, `"NEO4J_READ_ONLY": "true"`).
-When enabled, write tools (for example, `write-cypher`) are not exposed to clients.
+To avoid a LLM / Agent having a 'moment' the MCP server cannot make changes to existing infrastructure.  If you want to do that, set  AURA_API_READ_ONLY to false
 
-### Query Classification
+** WARNING - This is at your own risk.  LLM / Agents can be unpredictable. 
 
-The `read-cypher` tool performs an extra round-trip to the Neo4j database to guarantee read-only operations.
-
-Important notes:
-
-- **Write operations**: `CREATE`, `MERGE`, `DELETE`, `SET`, etc., are treated as non-read queries.
-- **Admin queries**: Commands like `SHOW USERS`, `SHOW DATABASES`, etc., are treated as non-read queries and must use `write-cypher` instead.
-- **Profile queries**: `EXPLAIN PROFILE` queries are treated as non-read queries, even if the underlying statement is read-only.
-- **Schema operations**: `CREATE INDEX`, `DROP CONSTRAINT`, etc., are treated as non-read queries.
+  
 
 ## Example Natural Language Prompts
 
 Below are some example prompts you can try in Copilot or any other MCP client:
 
-- "What does my Neo4j instance contain? List all node labels, relationship types, and property keys."
-- "Find all Person nodes and their relationships in my Neo4j instance."
-- "Create a new User node with a name 'John' in my Neo4j instance."
+- "List all instances in Aura"
 
-## Security tips:
 
-- Use a restricted Neo4j user for exploration.
-- Review generated Cypher before executing in production databases.
+## Disclaimer
+Although based on a fork of Neo4j official MCP server, this has no association with Neo4j.  It's a pet project of mine. 
 
-## Telemetry
+** WARNING - Use at your own risk.  LLM / Agents can be unpredictable. 
 
-By default, `neo4j-mcp` collects anonymous usage data to help us improve the product.
-This includes information like the tools being used, the operating system, and CPU architecture.
-We do not collect any personal or sensitive information.
 
-To disable telemetry, set the `NEO4J_TELEMETRY` environment variable to `"false"`.
-
-## Documentation
-
-📚 **[Contributing Guide](CONTRIBUTING.md)** – Contribution workflow, development environment, mocks & testing.
-
-Issues / feedback: open a GitHub issue with reproduction details (omit sensitive data).

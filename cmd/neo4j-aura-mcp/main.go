@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/neo4j/mcp/internal/cli"
-	"github.com/neo4j/mcp/internal/config"
-	"github.com/neo4j/mcp/internal/server"
+	"github.com/LackOfMorals/unofficialMcp/internal/cli"
+	"github.com/LackOfMorals/unofficialMcp/internal/config"
+	"github.com/LackOfMorals/unofficialMcp/internal/server"
 )
 
 // go build -C cmd/neo4j-aura-mcp -o ../../bin/ -ldflags "-X 'main.Version=001' "

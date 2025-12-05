@@ -21,7 +21,7 @@ Environment Variables:
 
 	AURA_API_URI          The URI of the Aura API  - OPTIONAL - ( Default: https://api.neo4j.io/v1 )
 	AURA_API_ID           Client Id used to obtain an token that is then used to acccess the Aura API - REQUIRED - ( Default: N/A ) 
-	AURA_API_SECRET       Client Secret used to obtain an token that is then used to acccess the Aura API - REQUIRED - ( Default: N/A ) 
+	AURA_API_SECRET       Client Secret used to obtain an token that is then used to acccess the Aura API - REQUIRED - ( Default: N/A )
     AURA_API_READ_ONLY    Prevents updates and deletions to Aura infrastructure.  Set to False to allow that. Aura API - OPTIONAL - ( Default: True ) 
   
 

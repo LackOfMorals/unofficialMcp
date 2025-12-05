@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/mark3labs/mcp-go/server"
 
-	"github.com/neo4j/mcp/internal/tools/aura"
+	"github.com/LackOfMorals/unofficialMcp/internal/tools/aura"
 )
 
 // RegisterTools registers all enabled MCP tools and adds them to the provided MCP server.
@@ -37,8 +37,8 @@ func getAllTools() []server.ServerTool {
 	return []server.ServerTool{
 		// Aura infrastructure management
 		{
-			Tool:    aura.CreateInstanceSpec(),
-			Handler: aura.CreateInstanceHandler(),
+			Tool:    aura.ListInstanceSpec(),
+			Handler: aura.ListInstanceHandler(),
 		},
 	}
 }

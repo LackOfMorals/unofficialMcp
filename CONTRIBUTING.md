@@ -204,7 +204,7 @@ When adding new database operations:
 
 ### Getting Help
 
-- Check existing [GitHub Issues](https://github.com/neo4j/mcp/issues)
+- Check existing [GitHub Issues](https://github.com/LackOfMorals/unofficialMcp/issues)
 - Ask questions in pull request discussions
 - Reach out to maintainers for complex architectural questions
 

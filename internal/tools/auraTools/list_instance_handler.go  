@@ -1,4 +1,4 @@
-package aura
+package auraTools
 
 import (
 	"context"
@@ -6,13 +6,13 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-func CreateInstanceHandler() func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func ListInstanceHandler() func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		return handleCreateInstance(ctx, request)
 	}
 }
 
-func handleCreateInstance(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func handleListInstance(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 
 	return mcp.NewToolResultText(""), nil
 }

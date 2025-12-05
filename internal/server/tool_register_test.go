@@ -3,11 +3,11 @@ package server_test
 import (
 	"testing"
 
-	"github.com/neo4j/mcp/internal/analytics"
-	analytics_mock "github.com/neo4j/mcp/internal/analytics/mocks"
-	"github.com/neo4j/mcp/internal/config"
-	db_mock "github.com/neo4j/mcp/internal/database/mocks"
-	"github.com/neo4j/mcp/internal/server"
+	"github.com/LackOfMorals/unofficialMcp/internal/analytics"
+	analytics_mock "github.com/LackOfMorals/unofficialMcp/internal/analytics/mocks"
+	"github.com/LackOfMorals/unofficialMcp/internal/config"
+	db_mock "github.com/LackOfMorals/unofficialMcp/internal/database/mocks"
+	"github.com/LackOfMorals/unofficialMcp/internal/server"
 	"go.uber.org/mock/gomock"
 )
 

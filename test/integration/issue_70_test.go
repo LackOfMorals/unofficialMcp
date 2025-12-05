@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LackOfMorals/unofficialMcp/internal/tools"
+	"github.com/LackOfMorals/unofficialMcp/internal/tools/cypher"
+	"github.com/LackOfMorals/unofficialMcp/test/integration/helpers"
 	"github.com/mark3labs/mcp-go/mcp"
-	"github.com/neo4j/mcp/internal/tools"
-	"github.com/neo4j/mcp/internal/tools/cypher"
-	"github.com/neo4j/mcp/test/integration/helpers"
 )
 
-// https://github.com/neo4j/mcp/issues/70
+// https://github.com/LackOfMorals/unofficialMcp/issues/70
 func TestIssue70(t *testing.T) {
 	t.Parallel()
 

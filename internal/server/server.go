@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/LackOfMorals/aura-client"
+	"github.com/LackOfMorals/unofficialMcp/internal/config"
 	"github.com/mark3labs/mcp-go/server"
-	"github.com/neo4j/mcp/internal/config"
 )
 
 // Neo4jMCPServer represents the MCP server instance
