@@ -1,4 +1,4 @@
-package auraTools
+package auraapi
 
 import (
 	"github.com/mark3labs/mcp-go/mcp"

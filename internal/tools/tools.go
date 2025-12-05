@@ -6,5 +6,5 @@ import (
 
 // ToolDependencies contains all dependencies needed by tools
 type ToolDependencies struct {
-	aClient *aura.AuraAPIClient
+	AClient *aura.AuraAPIClient
 }

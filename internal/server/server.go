@@ -2,7 +2,8 @@ package server
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
+	"os"
 
 	"github.com/LackOfMorals/aura-client"
 	"github.com/LackOfMorals/unofficialMcp/internal/config"
@@ -15,6 +16,7 @@ type Neo4jMCPServer struct {
 	config    *config.Config
 	aClient   *aura.AuraAPIClient
 	version   string
+	logger    *slog.Logger
 }
 
 // NewNeo4jMCPServer creates a new MCP server instance
@@ -26,11 +28,12 @@ func NewNeo4jMCPServer(version string, cfg *config.Config) *Neo4jMCPServer {
 		aura.WithCredentials(cfg.ClientId, cfg.ClientSecret),
 	)
 	if err != nil {
-		log.Fatalf("Failed to create Aura API client: %v", err)
+		slog.Error("Failed to create Aura API client: %v", slog.Any("Error: %v", err))
+		os.Exit(1)
 	}
 
 	mcpServer := server.NewMCPServer(
-		"neo4j-mcp",
+		"neo4j-aura-mcp",
 		version,
 		server.WithToolCapabilities(true),
 		server.WithInstructions("This MCP Server provides tool calling to manage your Neo4j Aura Infrastructure"),
@@ -45,20 +48,20 @@ func NewNeo4jMCPServer(version string, cfg *config.Config) *Neo4jMCPServer {
 
 // Start initializes and starts the MCP server using stdio transport
 func (s *Neo4jMCPServer) Start() error {
-	log.Println("Starting Aura infrastructure MCP Server...")
+	slog.Info("Starting Aura infrastructure MCP Server...")
 
 	// Register tools
 	if err := s.RegisterTools(); err != nil {
 		return fmt.Errorf("failed to register tools: %w", err)
 	}
-	log.Println("Started Aura infrastructure MCP Server. Now listening for input...")
+	slog.Info("Started Aura infrastructure MCP Server. Now listening for input...")
 	// Note: ServeStdio handles its own signal management for graceful shutdown
 	return server.ServeStdio(s.MCPServer)
 }
 
 // Stop gracefully stops the server
 func (s *Neo4jMCPServer) Stop() error {
-	log.Println("Stopping Aura infrastructure MCP Server...")
+	slog.Info("Stopping Aura infrastructure MCP Server...")
 	// Currently no cleanup needed - the MCP server handles its own lifecycle
 	// Database service cleanup is handled by the caller (main.go)
 	return nil

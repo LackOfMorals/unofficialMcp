@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"log/slog"
+	"os"
 
 	"github.com/LackOfMorals/unofficialMcp/internal/cli"
 	"github.com/LackOfMorals/unofficialMcp/internal/config"
@@ -12,13 +13,20 @@ import (
 var Version = "development"
 
 func main() {
+	// Enable debug-level logging to stderr
+	opts := &slog.HandlerOptions{Level: slog.LevelWarn}
+	handler := slog.NewTextHandler(os.Stderr, opts)
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
+
 	// Handle CLI arguments (version, help, etc.)
 	cli.HandleArgs(Version)
 
 	// get config from environment variables
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Failed to load configuration: %v", err)
+		slog.Error("Failed to load configuration: %v", slog.Any("Error: %v", err))
+		os.Exit(1)
 	}
 
 	// Create and configure the MCP server
@@ -27,13 +35,12 @@ func main() {
 	// Gracefully handle shutdown
 	defer func() {
 		if err := mcpServer.Stop(); err != nil {
-			log.Printf("Error stopping server: %v", err)
 		}
 	}()
 
 	// Start the server (this blocks until the server is stopped)
 	if err := mcpServer.Start(); err != nil {
-		log.Printf("Server error: %v", err)
+		slog.Error("Server error: %v", slog.Any("Error: %v", err))
 		return // so that defer can run
 	}
 

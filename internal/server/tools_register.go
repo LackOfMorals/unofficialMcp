@@ -1,9 +1,9 @@
 package server
 
 import (
+	"github.com/LackOfMorals/unofficialMcp/internal/tools"
+	"github.com/LackOfMorals/unofficialMcp/internal/tools/auraapi"
 	"github.com/mark3labs/mcp-go/server"
-
-	"github.com/LackOfMorals/unofficialMcp/internal/tools/aura"
 )
 
 // RegisterTools registers all enabled MCP tools and adds them to the provided MCP server.
@@ -13,8 +13,11 @@ import (
 // Note: this read-only filtering relies on the tool annotation "readonly" (ReadOnlyHint). If the annotation
 // is not defined or is set to false, the tool will be added (i.e., only tools with readonly=true are filtered in read-only mode).
 func (s *Neo4jMCPServer) RegisterTools() error {
+	deps := &tools.ToolDependencies{
+		AClient: s.aClient,
+	}
 
-	all := getAllTools()
+	all := getAllTools(deps)
 
 	// If read-only mode is enabled, expose only tools annotated as read-only.
 	if s.config != nil && s.config.ReadOnly == "true" {
@@ -33,12 +36,12 @@ func (s *Neo4jMCPServer) RegisterTools() error {
 }
 
 // getAllTools returns all available tools with their specs and handlers
-func getAllTools() []server.ServerTool {
+func getAllTools(deps *tools.ToolDependencies) []server.ServerTool {
 	return []server.ServerTool{
 		// Aura infrastructure management
 		{
-			Tool:    aura.ListInstanceSpec(),
-			Handler: aura.ListInstanceHandler(),
+			Tool:    auraapi.ListInstanceSpec(),
+			Handler: auraapi.ListInstanceHandler(deps),
 		},
 	}
 }
