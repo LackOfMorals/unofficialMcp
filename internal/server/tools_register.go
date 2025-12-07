@@ -3,7 +3,6 @@ package server
 import (
 	"github.com/LackOfMorals/unofficialMcp/internal/outcomes"
 	"github.com/LackOfMorals/unofficialMcp/internal/outcomes/implementations"
-	"github.com/LackOfMorals/unofficialMcp/internal/tools"
 	"github.com/LackOfMorals/unofficialMcp/internal/tools/meta"
 	"github.com/mark3labs/mcp-go/server"
 )
@@ -20,9 +19,9 @@ func (s *Neo4jMCPServer) RegisterTools() error {
 		return err
 	}
 
-	deps := &tools.ToolDependencies{
-		AClient:  s.aClient,
-		Registry: registry,
+	// Create dependencies for outcome handlers
+	deps := &outcomes.OutcomeDependencies{
+		AClient: s.aClient,
 	}
 
 	// Register the three meta-tools

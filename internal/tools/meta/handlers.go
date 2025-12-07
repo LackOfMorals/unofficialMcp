@@ -7,7 +7,6 @@ import (
 	"log/slog"
 
 	"github.com/LackOfMorals/unofficialMcp/internal/outcomes"
-	"github.com/LackOfMorals/unofficialMcp/internal/tools"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -16,9 +15,13 @@ func ListOutcomesHandler(registry *outcomes.Registry) func(context.Context, mcp.
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Get optional category filter
 		var category string
-		if catVal, ok := request.Params.Arguments["category"]; ok {
-			if catStr, ok := catVal.(string); ok {
-				category = catStr
+		
+		// Cast Arguments to map[string]interface{} first
+		if args, ok := request.Params.Arguments.(map[string]interface{}); ok {
+			if catVal, ok := args["category"]; ok {
+				if catStr, ok := catVal.(string); ok {
+					category = catStr
+				}
 			}
 		}
 
@@ -64,8 +67,14 @@ func ListOutcomesHandler(registry *outcomes.Registry) func(context.Context, mcp.
 // DescribeOutcomeHandler returns the handler for describing a specific outcome
 func DescribeOutcomeHandler(registry *outcomes.Registry) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Cast Arguments to map[string]interface{} first
+		args, ok := request.Params.Arguments.(map[string]interface{})
+		if !ok {
+			return mcp.NewToolResultError("Invalid arguments format"), nil
+		}
+
 		// Get outcome_id parameter
-		outcomeID, ok := request.Params.Arguments["outcome_id"].(string)
+		outcomeID, ok := args["outcome_id"].(string)
 		if !ok || outcomeID == "" {
 			return mcp.NewToolResultError("outcome_id parameter is required"), nil
 		}
@@ -107,10 +116,16 @@ func DescribeOutcomeHandler(registry *outcomes.Registry) func(context.Context, m
 }
 
 // ExecuteOutcomeHandler returns the handler for executing an outcome
-func ExecuteOutcomeHandler(registry *outcomes.Registry, deps *tools.ToolDependencies) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func ExecuteOutcomeHandler(registry *outcomes.Registry, deps *outcomes.OutcomeDependencies) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Cast Arguments to map[string]interface{} first
+		requestArgs, ok := request.Params.Arguments.(map[string]interface{})
+		if !ok {
+			return mcp.NewToolResultError("Invalid arguments format"), nil
+		}
+
 		// Get outcome_id parameter
-		outcomeID, ok := request.Params.Arguments["outcome_id"].(string)
+		outcomeID, ok := requestArgs["outcome_id"].(string)
 		if !ok || outcomeID == "" {
 			return mcp.NewToolResultError("outcome_id parameter is required"), nil
 		}
@@ -123,7 +138,7 @@ func ExecuteOutcomeHandler(registry *outcomes.Registry, deps *tools.ToolDependen
 
 		// Get arguments (if provided)
 		args := make(map[string]interface{})
-		if argsVal, ok := request.Params.Arguments["arguments"]; ok {
+		if argsVal, ok := requestArgs["arguments"]; ok {
 			if argsMap, ok := argsVal.(map[string]interface{}); ok {
 				args = argsMap
 			}

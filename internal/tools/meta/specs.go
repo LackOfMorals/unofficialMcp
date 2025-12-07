@@ -16,7 +16,7 @@ func ListOutcomesSpec() mcp.Tool {
 		mcp.WithIdempotentHintAnnotation(true),
 		mcp.WithOpenWorldHintAnnotation(false),
 		mcp.WithString("category",
-			mcp.Required(false),
+			mcp.Required(),
 			mcp.Description("Optional: Filter outcomes by category (e.g., 'instance-management', 'database-operations')")),
 	)
 }
@@ -33,7 +33,7 @@ func DescribeOutcomeSpec() mcp.Tool {
 		mcp.WithIdempotentHintAnnotation(true),
 		mcp.WithOpenWorldHintAnnotation(false),
 		mcp.WithString("outcome_id",
-			mcp.Required(true),
+			mcp.Required(),
 			mcp.Description("The unique identifier of the outcome to describe")),
 	)
 }
@@ -45,15 +45,14 @@ func ExecuteOutcomeSpec() mcp.Tool {
 			"The outcome will call the necessary API endpoints and return the results. "+
 			"Use 'describe-outcome' first to understand what parameters are required."),
 		mcp.WithTitleAnnotation("Execute Outcome"),
-		mcp.WithReadOnlyHintAnnotation(false), // May be read-only depending on the outcome
+		mcp.WithReadOnlyHintAnnotation(false),    // May be read-only depending on the outcome
 		mcp.WithDestructiveHintAnnotation(false), // May be destructive depending on the outcome
-		mcp.WithIdempotentHintAnnotation(false), // May be idempotent depending on the outcome
+		mcp.WithIdempotentHintAnnotation(false),  // May be idempotent depending on the outcome
 		mcp.WithOpenWorldHintAnnotation(false),
 		mcp.WithString("outcome_id",
-			mcp.Required(true),
+			mcp.Required(),
 			mcp.Description("The unique identifier of the outcome to execute")),
 		mcp.WithObject("arguments",
-			mcp.Required(false),
 			mcp.Description("Parameters for the outcome. Use 'describe-outcome' to see what parameters are required. "+
 				"Format: {\"param_name\": \"param_value\", ...}")),
 	)

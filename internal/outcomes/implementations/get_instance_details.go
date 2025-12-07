@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/LackOfMorals/unofficialMcp/internal/outcomes"
-	"github.com/LackOfMorals/unofficialMcp/internal/tools"
 )
 
 // GetInstanceDetailsOutcome returns the outcome definition for getting instance details
@@ -29,7 +28,7 @@ func GetInstanceDetailsOutcome() *outcomes.Outcome {
 	}
 }
 
-func getInstanceDetailsHandler(ctx context.Context, deps *tools.ToolDependencies, args map[string]interface{}) (*outcomes.OutcomeResult, error) {
+func getInstanceDetailsHandler(ctx context.Context, deps *outcomes.OutcomeDependencies, args map[string]interface{}) (*outcomes.OutcomeResult, error) {
 	instanceID, ok := args["instance_id"].(string)
 	if !ok || instanceID == "" {
 		return &outcomes.OutcomeResult{

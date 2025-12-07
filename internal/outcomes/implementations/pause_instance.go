@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/LackOfMorals/unofficialMcp/internal/outcomes"
-	"github.com/LackOfMorals/unofficialMcp/internal/tools"
 )
 
 // PauseInstanceOutcome returns the outcome definition for pausing an instance
@@ -29,7 +28,7 @@ func PauseInstanceOutcome() *outcomes.Outcome {
 	}
 }
 
-func pauseInstanceHandler(ctx context.Context, deps *tools.ToolDependencies, args map[string]interface{}) (*outcomes.OutcomeResult, error) {
+func pauseInstanceHandler(ctx context.Context, deps *outcomes.OutcomeDependencies, args map[string]interface{}) (*outcomes.OutcomeResult, error) {
 	instanceID, ok := args["instance_id"].(string)
 	if !ok || instanceID == "" {
 		return &outcomes.OutcomeResult{
@@ -56,8 +55,8 @@ func pauseInstanceHandler(ctx context.Context, deps *tools.ToolDependencies, arg
 	// This demonstrates how an outcome can make decisions based on current state
 	if instance.Data.Status == "paused" {
 		return &outcomes.OutcomeResult{
-			Success:      true,
-			Data:         map[string]interface{}{
+			Success: true,
+			Data: map[string]interface{}{
 				"message":  "Instance is already paused",
 				"instance": instance.Data,
 			},

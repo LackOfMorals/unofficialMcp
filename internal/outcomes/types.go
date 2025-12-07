@@ -3,7 +3,7 @@ package outcomes
 import (
 	"context"
 
-	"github.com/LackOfMorals/unofficialMcp/internal/tools"
+	"github.com/LackOfMorals/aura-client"
 )
 
 // Outcome represents a high-level operation that can be performed
@@ -76,5 +76,10 @@ type OutcomeResult struct {
 	APICallsMade []string
 }
 
+// OutcomeDependencies contains dependencies needed by outcome handlers
+type OutcomeDependencies struct {
+	AClient *aura.AuraAPIClient
+}
+
 // OutcomeHandler is the function signature for outcome handlers
-type OutcomeHandler func(ctx context.Context, deps *tools.ToolDependencies, args map[string]interface{}) (*OutcomeResult, error)
+type OutcomeHandler func(ctx context.Context, deps *OutcomeDependencies, args map[string]interface{}) (*OutcomeResult, error)

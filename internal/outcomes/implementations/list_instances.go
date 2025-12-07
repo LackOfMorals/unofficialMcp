@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/LackOfMorals/unofficialMcp/internal/outcomes"
-	"github.com/LackOfMorals/unofficialMcp/internal/tools"
 )
 
 // ListInstancesOutcome returns the outcome definition for listing instances
@@ -22,7 +21,7 @@ func ListInstancesOutcome() *outcomes.Outcome {
 	}
 }
 
-func listInstancesHandler(ctx context.Context, deps *tools.ToolDependencies, args map[string]interface{}) (*outcomes.OutcomeResult, error) {
+func listInstancesHandler(ctx context.Context, deps *outcomes.OutcomeDependencies, args map[string]interface{}) (*outcomes.OutcomeResult, error) {
 	// Call the Aura API to list instances
 	instances, err := deps.AClient.Instances.List()
 	if err != nil {
