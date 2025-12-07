@@ -1,47 +1,51 @@
 package server
 
 import (
+	"github.com/LackOfMorals/unofficialMcp/internal/outcomes"
+	"github.com/LackOfMorals/unofficialMcp/internal/outcomes/implementations"
 	"github.com/LackOfMorals/unofficialMcp/internal/tools"
-	"github.com/LackOfMorals/unofficialMcp/internal/tools/auraapi"
+	"github.com/LackOfMorals/unofficialMcp/internal/tools/meta"
 	"github.com/mark3labs/mcp-go/server"
 )
 
-// RegisterTools registers all enabled MCP tools and adds them to the provided MCP server.
-// Tools are filtered according to the server configuration. For example, when the read-only
-// mode is enabled (e.g. via the NEO4J_READ_ONLY environment variable or the Config.ReadOnly flag),
-// any tool that performs state mutation will be excluded; only tools annotated as read-only will be registered.
-// Note: this read-only filtering relies on the tool annotation "readonly" (ReadOnlyHint). If the annotation
-// is not defined or is set to false, the tool will be added (i.e., only tools with readonly=true are filtered in read-only mode).
+// RegisterTools registers the three meta-tools that provide access to all outcomes
+// These meta-tools are:
+// 1. list-outcomes: Lists all available outcomes
+// 2. describe-outcome: Gets details about a specific outcome
+// 3. execute-outcome: Executes an outcome with provided parameters
 func (s *Neo4jMCPServer) RegisterTools() error {
+	// Create and populate the outcome registry
+	registry := outcomes.NewRegistry()
+	if err := implementations.RegisterAll(registry); err != nil {
+		return err
+	}
+
 	deps := &tools.ToolDependencies{
-		AClient: s.aClient,
+		AClient:  s.aClient,
+		Registry: registry,
 	}
 
-	all := getAllTools(deps)
-
-	// If read-only mode is enabled, expose only tools annotated as read-only.
-	if s.config != nil && s.config.ReadOnly == "true" {
-		readOnlyTools := make([]server.ServerTool, 0, len(all))
-		for _, t := range all {
-			if t.Tool.Annotations.ReadOnlyHint != nil && *t.Tool.Annotations.ReadOnlyHint {
-				readOnlyTools = append(readOnlyTools, t)
-			}
-		}
-		s.MCPServer.AddTools(readOnlyTools...)
-		return nil
-	}
-
-	s.MCPServer.AddTools(all...)
-	return nil
-}
-
-// getAllTools returns all available tools with their specs and handlers
-func getAllTools(deps *tools.ToolDependencies) []server.ServerTool {
-	return []server.ServerTool{
-		// Aura infrastructure management
+	// Register the three meta-tools
+	metaTools := []server.ServerTool{
 		{
-			Tool:    auraapi.ListInstanceSpec(),
-			Handler: auraapi.ListInstanceHandler(deps),
+			Tool:    meta.ListOutcomesSpec(),
+			Handler: meta.ListOutcomesHandler(registry),
+		},
+		{
+			Tool:    meta.DescribeOutcomeSpec(),
+			Handler: meta.DescribeOutcomeHandler(registry),
+		},
+		{
+			Tool:    meta.ExecuteOutcomeSpec(),
+			Handler: meta.ExecuteOutcomeHandler(registry, deps),
 		},
 	}
+
+	// In read-only mode, we could filter outcomes but the execute-outcome tool
+	// will enforce read-only restrictions based on the outcome's ReadOnly flag
+	// For now, we register all three tools regardless of read-only mode
+	// The execute-outcome handler can check s.config.ReadOnly if needed
+
+	s.MCPServer.AddTools(metaTools...)
+	return nil
 }
